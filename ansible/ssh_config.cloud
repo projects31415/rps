@@ -1,0 +1,10 @@
+Host *
+    ControlPersist 10m
+    ControlMaster auto
+    ControlPath /tmp/%r@%h:%p
+    StrictHostKeyChecking no
+    IdentityFile ~/.ssh/id_rsa_test_vps
+    IdentitiesOnly yes
+    UserKnownHostsFile /dev/null
+    User ubuntu
+    Port 22

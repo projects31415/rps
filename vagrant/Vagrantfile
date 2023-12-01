@@ -1,0 +1,94 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.require_version ">= 2.3.4"
+
+CONFIG_LOCAL = File.join(File.dirname(__FILE__), 'config.local.rb')
+if File.exist?(CONFIG_LOCAL)
+  require CONFIG_LOCAL
+end
+
+require File.join(File.dirname(__FILE__), 'config_defaults.rb')
+require File.join(File.dirname(__FILE__), 'functions.rb')
+
+Vagrant.configure("2") do |config|
+
+#  ---------------------------------------------------------------------------------
+#  VMs COMMON SETTINGS
+#  ---------------------------------------------------------------------------------
+
+  config.vm.box = $vms_os_name
+
+  if ENV['WSL_DISTRO_NAME']
+    # disable folder sharing for wsl2
+    config.vm.synced_folder ".", "/vagrant_data" , disabled: true
+  end
+
+  # available range for ssh port collision resolving
+  config.vm.usable_port_range = $host_usable_ssh_ports_range
+
+  add_ssh_public_keys(config)
+
+  # use apt-cacher for quicker apt installations
+  if $use_apt_cacher == true && $apt_cacher_address != ''
+    add_apt_cacher_proxy(config)
+  else
+  end
+
+#  ---------------------------------------------------------------------------------
+#  VM TEMPLATE
+#  ---------------------------------------------------------------------------------
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "base_template#{$vm_postfix}"
+    vb.gui = false
+    vb.memory = 512
+    vb.cpus = 1
+    vb.linked_clone = true # create a master VM before creating the linked clones for faster VMs provisioning and less disk space usage
+
+    vb.customize [ "modifyvm", :id, "--groups", "/#{$vbox_vm_group_name}"]
+
+    if ENV['WSL_DISTRO_NAME']
+      # disable serial port for wsl2 (https://github.com/joelhandwell/ubuntu_vagrant_boxes/issues/1)
+      vb.customize [ "modifyvm", :id, "--uartmode1", "disconnected" ]
+    end
+
+    config.vm.provision :shell, inline: "dpkg-reconfigure -pmedium unattended-upgrades" # disable unattended upgrades
+
+    config.vm.network "forwarded_port", id: "ssh" , guest: 22, host: 22, auto_correct: true
+  end
+
+  scalable_vms = []
+  non_scalable_vms = []
+
+  $vm_specs.each do |key, value|
+    if value.key?('qty')
+      scalable_vms << key
+    else
+      non_scalable_vms << key
+    end
+  end
+
+#  ---------------------------------------------------------------------------------
+#  SSH CONFIGS & ANSIBLE INVENTORY
+#  ---------------------------------------------------------------------------------
+
+  generate_ssh_config(scalable_vms, non_scalable_vms)
+  generate_ansible_inventory(scalable_vms, non_scalable_vms)
+
+  if $create_ssh_config_in_homedir and $homedir_ssh_config_name != ''
+    create_homedir_ssh_config($homedir_ssh_config_name, $ssh_control_path_dir, $generated_ssh_config_path)
+  end
+
+#  ---------------------------------------------------------------------------------
+#  VMS
+#  ---------------------------------------------------------------------------------
+
+  for vm in non_scalable_vms do
+    create_vm(config, vm)
+  end
+
+  for vm in scalable_vms do
+    create_vms(config, vm)
+  end
+end

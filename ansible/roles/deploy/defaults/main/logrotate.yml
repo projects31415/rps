@@ -1,0 +1,17 @@
+---
+deploy__app_logrotate_rules: |
+  {{ deploy__app_logs_base_dir }}/*/main.log
+  {
+      rotate {{ deploy__app_logs_fragments }}
+      {{ deploy__app_logrotate_frequency }}
+      missingok
+      notifempty
+      compress
+      delaycompress
+      copytruncate
+  }
+
+deploy__app_logrotate_frequency: hourly # hourly — logrotate cron needs to be in /etc/cron.hourly/logrotate dir
+deploy__app_logs_fragments: 24
+
+deploy__app_logs_base_dir: /opt/bongo/logs

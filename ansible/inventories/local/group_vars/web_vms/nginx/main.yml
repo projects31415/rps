@@ -1,0 +1,19 @@
+---
+nginx__install_vhost_traffic_module: true
+
+nginx__websites_conf_templates_path: "{{ inventory_dir }}/group_templates/web_vms/nginx/sites"
+nginx__disable_default_website_config: true
+
+nginx__generate_additional_conf_files: true
+nginx__generate_additional_conf_files_templates_path: "{{ inventory_dir }}/group_templates/web_vms/nginx/conf.d"
+
+nginx__htpasswd_files:
+  - path: /etc/nginx/monitoring.htpasswd
+    username: monitoring
+    password: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      61316664623462396232646565363334343566353839653065366133613866613462623063316565
+      6661323231646137306530356564363539373938663136640a376336393137363133323439393063
+      39666163386536643234346439336534393338626138383738303637343462316432333631643034
+      3532623536646334650a336537303262373332336536383535353530356366353831343539393163
+      3462

@@ -1,0 +1,10 @@
+---
+-
+  name: Setup db vms
+  hosts: db_vms
+  strategy: free
+  gather_facts: true
+  become: true
+
+  roles:
+    - postgres

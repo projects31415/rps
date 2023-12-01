@@ -1,0 +1,10 @@
+---
+-
+  name: Install tools for nginx monitoring
+  hosts: "{{ _monitoring_tools__web_hosts }}"
+  strategy: free
+  gather_facts: true
+  become: true
+
+  roles:
+    - nginx_exporter

@@ -1,0 +1,38 @@
+---
+collections:
+  -
+    name: ansible.posix
+    version: 1.5.4
+  -
+    name: community.general
+    version: 7.3.0
+  -
+    name: community.docker
+    version: 3.4.8
+
+roles:
+  -
+    name: nginx
+    src: git@gitlab.com:ansible_roles7534732/ansible_role_nginx.git
+    scm: git
+    version: 0.1.4
+  -
+    name: postgres
+    src: git@gitlab.com:ansible_roles7534732/ansible_role_postgres.git
+    scm: git
+    version: conf-files
+  -
+    name: prometheus
+    src: https://gitlab.com/ansible_roles7534732/ansible_role_prometheus.git
+    scm: git
+    version: 0.1.0
+  -
+    name: grafana_docker
+    src: https://gitlab.com/ansible_roles7534732/ansible_role_grafana_docker.git
+    scm: git
+    version: 0.1.1
+  -
+    name: nginx_exporter
+    src: https://gitlab.com/ansible_roles7534732/ansible_role_nginx_exporter.git
+    scm: git
+    version: 0.1.2

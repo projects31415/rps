@@ -1,0 +1,5 @@
+# servers must be live during nginx startup
+upstream app-nodes {
+    server 192.168.50.21:6432;
+    server 192.168.50.20:6432;
+}

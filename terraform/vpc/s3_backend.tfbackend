@@ -1,0 +1,2 @@
+shared_credentials_file = "../credentials"
+key                     = "rps/vpc/terraform.tfstate"

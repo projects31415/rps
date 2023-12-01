@@ -1,0 +1,7 @@
+# inventories/local/hosts
+
+# ansible galaxy dependencies
+collections
+galaxy_roles
+
+ssh_config.local

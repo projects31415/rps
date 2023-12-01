@@ -1,0 +1,18 @@
+---
+deploy__healthcheck_systemd_service: |
+  [Unit]
+  Description=healtheck for application
+
+  [Service]
+  Restart=always
+  User={{ deploy__system_user_name }}
+  ExecStart={{ deploy__app_dir }}/healthcheck.sh
+  ExecStop=/bin/kill -HUP $MAINPID
+  StartLimitBurst=30
+  RestartSec=5
+  StartLimitInterval=200
+  SendSIGKILL=no
+
+  [Install]
+  WantedBy=multi-user.target
+  WantedBy=bingo.service

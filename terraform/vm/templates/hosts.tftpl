@@ -1,0 +1,17 @@
+[web_vms]
+%{ for server_name, ip_addr in web_ip_addrs ~}
+${server_name} ansible_host=${ip_addr}
+%{ endfor ~}
+
+[app_vms]
+%{ for server_name, ip_addr in app_ip_addrs ~}
+${server_name} ansible_host=${ip_addr}
+%{ endfor ~}
+
+[db_vms]
+%{ for server_name, ip_addr in db_ip_addrs ~}
+${server_name} ansible_host=${ip_addr}
+%{ endfor ~}
+
+[all:vars]
+ansible_ssh_common_args=-J ${bastion_ip_addr} -F ./ssh_config.cloud -o ControlMaster=auto -o ControlPersist=10m -o ControlPath=ssh/cm_socket/local.%C

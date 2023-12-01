@@ -1,0 +1,15 @@
+---
+-
+  name: Setup vms
+  hosts: web_vms
+  strategy: free
+  gather_facts: true
+  become: true
+
+  roles:
+    - nginx
+-
+  name: Install web monitoring tools
+  ansible.builtin.import_playbook: _monitoring_tools_web.yml
+  vars:
+    _monitoring_tools__web_hosts: web_vms

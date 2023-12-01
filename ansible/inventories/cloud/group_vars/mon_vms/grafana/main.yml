@@ -1,0 +1,5 @@
+---
+grafana_docker__root_url: /grafana
+grafana_docker__serve_from_sub_path: true
+grafana_docker__version: 10.2.0
+grafana_docker__external_port: "{{ ansible_facts['enp0s8']['ipv4']['address'] }}:3000"

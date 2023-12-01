@@ -1,0 +1,17 @@
+---
+grafana_docker__datasources: |
+  apiVersion: 1
+
+  datasources:
+    - name: Prometheus
+      type: prometheus
+      access: proxy
+      # Access mode - proxy (server in the UI) or direct (browser in the UI).
+      url: http://{{ ansible_facts['enp0s8']['ipv4']['address'] }}:9090/prometheus
+      jsonData:
+        httpMethod: POST
+        manageAlerts: true
+        prometheusType: Prometheus
+        cacheLevel: High
+        disableRecordingRules: false
+        incrementalQueryOverlapWindow: 10m

@@ -1,0 +1,18 @@
+---
+deploy__app_systemd_service: |
+  [Unit]
+  Description=Unknown app
+  Documentation=https://docs.yandex.ru/docs/view?url=ya-disk-public://aZFzSWnWcEBeFUQaZTVH7mko2C8kWAY5drce3M9qlgYGtAG6xLa0qQ37gSVWb4T4q/J6bpmRyOJonT3VoXnDag==
+
+  [Service]
+  Restart=always
+  User={{ deploy__system_user_name }}
+  ExecStart={{ deploy__app_dir }}/{{ deploy__app_binary_name }} run_server
+  ExecStop=/bin/kill -HUP $MAINPID
+  StartLimitBurst=30
+  RestartSec=5
+  StartLimitInterval=200
+  SendSIGKILL=no
+
+  [Install]
+  WantedBy=multi-user.target

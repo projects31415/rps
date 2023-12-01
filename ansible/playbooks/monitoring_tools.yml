@@ -1,0 +1,6 @@
+---
+-
+  name: Install web monitoring tools
+  ansible.builtin.import_playbook: _monitoring_tools.yml
+  vars:
+    _monitoring_tools__web_hosts: web_vms

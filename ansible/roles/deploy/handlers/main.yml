@@ -1,0 +1,18 @@
+---
+-
+  name: Restart app systemd service
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: "{{ deploy__app_binary_name }}"
+    state: restarted
+    enabled: true
+  listen: restart_app_systemd_service
+
+-
+  name: Restart healthcheck service
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: healthchek_{{ deploy__app_binary_name }}
+    state: restarted
+    enabled: true
+  listen: restart_app_healthcheck

@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+student_email: {{ deploy__app_config_email }}
+postgres_cluster:
+  hosts:
+  - address: {{ deploy__app_config_db_address }}
+    port:  {{ deploy__app_config_db_port }}
+  user: {{ deploy__app_config_db_user }}
+  password: {{ deploy__app_config_db_password }}
+  db_name: {{ deploy__app_config_db_name }}
+  ssl_mode: disable
+  use_closest_node: false
+# {{ ansible_managed }}

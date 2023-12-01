@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+readonly SLEEP_TIMEOUT=5
+count=0
+max_failures=3
+
+while [[ true ]]; do
+    if curl --fail http://127.0.0.1:8000; then
+        count=0
+    else
+        ((count++))
+        if ((count == max_failures)); then
+            echo "Check failed"
+            sudo systemctl restart http_process
+        fi
+    fi
+    sleep ${SLEEP_TIMEOUT}
+done

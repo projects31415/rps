@@ -1,0 +1,6 @@
+---
+-
+  name: Run prepare db command
+  ansible.builtin.command: "{{ deploy__app_dir }}/{{ deploy__app_binary_name }} prepare_db"
+  become_user: '{{ deploy__system_user_name }}'
+  run_once: true

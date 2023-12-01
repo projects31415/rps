@@ -1,0 +1,11 @@
+profile  = "tf-state-acc" # same as aws_profile_for_s3_backend tf variable
+endpoint = "storage.yandexcloud.net"
+bucket   = "n98gt-tf-state-rps" # same as bucket_name tf variable
+
+# state locking
+dynamodb_endpoint = "https://docapi.serverless.yandexcloud.net/ru-central1/b1g0vh6uspd0m39d5er6/etnh011u407vhelqnolr" # tf output tf_state_lock_endpoint
+dynamodb_table    = "tf_locks"
+
+region                      = "us-east-1"
+skip_region_validation      = true
+skip_credentials_validation = true

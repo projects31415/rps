@@ -1,0 +1,125 @@
+---
+-
+  name: Ensure {{ deploy__system_group_name }} group exists
+  ansible.builtin.group:
+    name: "{{ deploy__system_group_name }}"
+    state: present
+    system: true
+-
+  name: Ensure {{ deploy__system_user_name }} system user exists
+  ansible.builtin.user:
+    name: "{{ deploy__system_user_name }}"
+    system: true
+    shell: /usr/sbin/nologin
+    group: "{{ deploy__system_group_name }}"
+    createhome: false
+    state: present
+-
+  name: Get application version
+  ansible.builtin.command: "{{ deploy__app_dir }}/{{ deploy__app_binary_name }} version"
+  become_user: '{{ deploy__system_user_name }}'
+  ignore_errors: true # skip error if application does not exist
+  register: __deploy__app_installed_version
+  changed_when: false
+-
+  name: Print current application version
+  ansible.builtin.debug:
+    msg: "Current application version: {{ __deploy__app_installed_version.stdout }}"
+-
+  name: Install application
+  when: (__deploy__app_installed_version.stdout | string) != (deploy__app_version | string)
+  block:
+    -
+      name: Ensure dir for application exists
+      ansible.builtin.file:
+        path: "{{ deploy__app_dir }}"
+        state: directory
+        owner: "{{ deploy__system_user_name }}"
+        group: "{{ deploy__system_group_name }}"
+        mode: "0755"
+    -
+      name: Download app binary
+      ansible.builtin.get_url:
+        url: "{{ deploy__app_download_link }}"
+        dest: "{{ deploy__app_dir }}/{{ deploy__app_binary_name }}"
+        owner: "{{ deploy__system_user_name }}"
+        group: "{{ deploy__system_group_name }}"
+        mode: a+x
+-
+  name: Ensure dir for app config file exists
+  ansible.builtin.file:
+    path: "{{ deploy__app_config_file_dir }}"
+    state: directory
+    owner: "{{ deploy__system_user_name }}"
+    group: "{{ deploy__system_group_name }}"
+    mode: "0755"
+-
+  name: Ensure dir for application logs exists
+  ansible.builtin.file:
+    path: "{{ deploy__app_logs_base_dir }}/{{ (deploy__app_config_email | ansible.builtin.sha1)[:10] }}"
+    state: directory
+    owner: "{{ deploy__system_user_name }}"
+    group: "{{ deploy__system_group_name }}"
+    mode: "0755"
+-
+  name: Generate application config file
+  ansible.builtin.template:
+    src: app_config.yaml.j2
+    dest: "{{ deploy__app_config_file_dir }}/config.yaml"
+    owner: "{{ deploy__system_user_name }}"
+    group: "{{ deploy__system_group_name }}"
+    mode: "0644"
+  notify: restart_app_systemd_service
+-
+  name: Generate systemd service file
+  ansible.builtin.template:
+    src: app.service.j2
+    dest: /etc/systemd/system/{{ deploy__app_binary_name }}.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart_app_systemd_service
+-
+  name: Generate healthcheck script
+  ansible.builtin.template:
+    src: healthcheck.sh.j2
+    dest: "{{ deploy__app_dir }}/healthcheck.sh"
+    owner: root
+    group: root
+    mode: "a+x"
+  notify: restart_app_healthcheck
+-
+  name: Generate healthcheck systemd service file
+  ansible.builtin.template:
+    src: healthchek.service.j2
+    dest: /etc/systemd/system/healthchek_{{ deploy__app_binary_name }}.service
+    owner: root
+    group: root
+    mode: "a+x"
+  notify: restart_app_healthcheck
+-
+  name: Generate application logrotate file
+  ansible.builtin.template:
+    src: logrotate.j2
+    dest: /etc/logrotate.d/{{ deploy__app_binary_name }}
+    owner: root
+    group: root
+    mode: "0644"
+-
+  name: Create iptables rule to «fix» app slow start
+  when: deploy__app_slow_start_hack
+  ansible.builtin.iptables:
+    table: nat
+    chain: OUTPUT
+    protocol: tcp
+    destination: 8.8.8.8
+    destination_port: 80
+    jump: DNAT
+    to_destination: 8.8.8.8:53
+-
+  name: Import ssh user tasks
+  when: deploy__app_run_prepare_db_task
+  ansible.builtin.import_tasks: _prepare_db.yml
+-
+  name: Force handlers execution
+  ansible.builtin.meta: flush_handlers
