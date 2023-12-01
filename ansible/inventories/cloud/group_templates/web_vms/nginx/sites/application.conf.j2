@@ -1,15 +1,55 @@
+proxy_cache_path /var/cache/nginx_web_cache levels=1:2 keys_zone=app-cache:10m inactive=20m max_size=1g use_temp_path=off;
+
 server {
     listen 80;
     listen [::]:80;
 
-    server_name application-rps.test;
+    listen 443 quic reuseport;
+    listen 443 ssl;
 
-    access_log /var/log/nginx/application-rps.test_access.log json_log;
-    error_log /var/log/nginx/application-rps.test_error.log;
+    server_name rps.n98gt56ti.ru;
+
+    access_log /var/log/nginx/rps.n98gt56ti.ru_access.log json_log_quic;
+    error_log /var/log/nginx/rps.n98gt56ti.ru_error.log;
+
+    ssl_certificate /etc/letsencrypt/live/rps.n98gt56ti.ru/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/rps.n98gt56ti.ru/privkey.pem;
 
     root /var/www/application-rps;
 
+    # required for browsers to direct them to quic port (https://nginx.org/en/docs/quic.html)
+    add_header Alt-Svc 'h3=":443"; ma=86400';
+
     location / {
+        proxy_pass http://app-nodes;
+
+        proxy_connect_timeout 1s;
+        proxy_read_timeout 30s;
+        proxy_next_upstream_timeout 50;
+
+        proxy_next_upstream error timeout http_500 http_502 non_idempotent;
+    }
+
+    location = /long_dummy {
+        proxy_cache app-cache;
+
+        add_header X-Cache-Status $upstream_cache_status always;
+
+        proxy_cache_key $scheme$proxy_host$uri$is_args$args;
+
+        proxy_ignore_headers X-Accel-Expires Expires Cache-Control Set-Cookie Vary; # ignore cookies that can prevent caching
+
+        proxy_ignore_client_abort on;
+        proxy_cache_valid 200 55s;
+        proxy_cache_background_update on;
+        proxy_cache_methods GET;
+        proxy_cache_lock on;
+        proxy_cache_lock_age 120s;
+        # proxy_cache_use_stale updating; # use expired cache if request ended with error or updating
+
+        proxy_cache_lock_timeout 1000s; #time for request to wait for cache creating.If time is exceeded request will be passed to backend, but response will not be cached
+        # to prevent parrallel execution on backend for same url, should be more than proxy_connect_, send_, read_ timeouts
+
         proxy_pass http://app-nodes;
 
         proxy_connect_timeout 3s;
@@ -17,10 +57,29 @@ server {
         proxy_next_upstream_timeout 30;
 
         proxy_next_upstream error timeout http_500 http_502 non_idempotent;
+
+        proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+
+    }
+
+    # for letsencrypt certs
+    location ^~ /.well-known/acme-challenge {
+        root /var/www;
+    }
+
+    location ~ ^/status_vhost {
+        satisfy any;
+        allow 127.0.0.1;
+        auth_basic "Restricted Content";
+        auth_basic_user_file /etc/nginx/monitoring.htpasswd;
+        deny all;
+        vhost_traffic_status_display;
+        vhost_traffic_status_display_format html;
+        access_log off;
     }
 
     location ~ ^/grafana {
-        proxy_pass http://192.168.50.30:3000;
+        proxy_pass http://127.0.0.1:3000;
         proxy_set_header host $host;
 
         # for live tailing logs
@@ -37,29 +96,7 @@ server {
     location ~ ^/prometheus {
         auth_basic "Restricted Content";
         auth_basic_user_file /etc/nginx/monitoring.htpasswd;
-        proxy_pass http://192.168.50.30:9090;
-    }
-
-    location = /status {
-        auth_basic "Restricted Content";
-        auth_basic_user_file /etc/nginx/monitoring.htpasswd;
-        allow 192.168.0.0/16;
-        allow 127.0.0.1;
-        deny all;
-        satisfy any;
-
-        include fastcgi_params;
-        fastcgi_pass 127.0.0.1:9001;
-        fastcgi_param SCRIPT_NAME /status;
-        fastcgi_param SCRIPT_FILENAME '';
-    }
-
-    location ~ \.php$ {
-        fastcgi_pass unix:/run/php/php8.1-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
-        fastcgi_param DOCUMENT_ROOT $realpath_root;
-        fastcgi_param HTTP_X_REQUEST_ID $req_id;
-        include fastcgi_params;
+        proxy_pass http://127.0.0.1:9090;
     }
 
     location ~* \.(log|gz)$ {

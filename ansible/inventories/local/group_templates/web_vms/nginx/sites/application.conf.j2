@@ -40,28 +40,6 @@ server {
         proxy_pass http://192.168.50.30:9090;
     }
 
-    location = /status {
-        auth_basic "Restricted Content";
-        auth_basic_user_file /etc/nginx/monitoring.htpasswd;
-        allow 192.168.0.0/16;
-        allow 127.0.0.1;
-        deny all;
-        satisfy any;
-
-        include fastcgi_params;
-        fastcgi_pass 127.0.0.1:9001;
-        fastcgi_param SCRIPT_NAME /status;
-        fastcgi_param SCRIPT_FILENAME '';
-    }
-
-    location ~ \.php$ {
-        fastcgi_pass unix:/run/php/php8.1-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
-        fastcgi_param DOCUMENT_ROOT $realpath_root;
-        fastcgi_param HTTP_X_REQUEST_ID $req_id;
-        include fastcgi_params;
-    }
-
     location ~* \.(log|gz)$ {
         deny all;
     }

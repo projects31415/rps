@@ -1,0 +1,30 @@
+- name: Check version of docker package
+  ansible.builtin.shell: pip show docker | grep Version | cut -d ' ' -f 2
+  ignore_errors: true
+  changed_when: false
+  register: certbot_pip_docker_version
+
+- name: Install pyopenssl
+  when: certbot_pip_docker_version.stdout != "" and (certbot_pip_docker_version.stdout | string) is version("6.0.0", '>=')
+  ansible.builtin.pip:
+    name: pyOpenSSL
+    state: present
+    version: "22.1.0"
+
+- name: Install certbot
+  ansible.builtin.package:
+    name:
+      - certbot
+    state: present
+
+- name: Ensure dir for post renewal-hooks exists
+  ansible.builtin.file:
+    path: /etc/letsencrypt/renewal-hooks/post/
+    state: directory
+    mode: 0755
+
+- name: Copy nginx reloading script
+  ansible.builtin.copy:
+    src: etc/letsencrypt/renewal-hooks/post/001-reload-nginx.sh
+    dest: /etc/letsencrypt/renewal-hooks/post/001-reload-nginx.sh
+    mode: a+x

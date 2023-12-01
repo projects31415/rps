@@ -5,6 +5,8 @@ postgresql__create_additional_conf_files: true
 
 postgresql__additional_conf: |
   listen_addresses = '*'
+  shared_buffers = 1024MB			# min 128kB
+  max_connections = 1000			# (change requires restart)
 
 postgresql__replace_default_pg_hba: true
 

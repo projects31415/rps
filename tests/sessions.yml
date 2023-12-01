@@ -1,0 +1,13 @@
+config:
+  target: 'https://rps.n98gt56ti.ru'
+  tls:
+    rejectUnauthorized: false
+  phases:
+    - duration: 10
+      arrivalRate: 120
+scenarios:
+  -
+    flow:
+    -
+      get:
+        url: "/api/session/{{$randomNumber(1,10000)}}"

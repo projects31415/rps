@@ -2,7 +2,6 @@
 -
   name: Setup vms
   hosts: app_vms
-  # strategy: free
   gather_facts: true
   become: true
 

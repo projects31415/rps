@@ -5,3 +5,5 @@ collections
 galaxy_roles
 
 ssh_config.local
+
+hosts

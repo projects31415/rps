@@ -1,0 +1,2 @@
+shared_credentials_file = "./../../credentials"
+key                     = "grafana/dashboard/terraform.tfstate"

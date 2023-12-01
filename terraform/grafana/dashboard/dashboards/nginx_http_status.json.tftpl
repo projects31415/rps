@@ -1,0 +1,129 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations \u0026 Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": ${tf_allow_edits},
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": { "type": "prometheus", "uid": "${tf_prometheus_data_source_uid}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 50,
+            "gradientMode": "opacity",
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": { "type": "linear" },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": { "group": "A", "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 80 }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{code=\"1xx\", host=\"${tf_domain_name}\", instance=\"${tf_host_name}\", job=\"nginx_vhost\"}"
+            },
+            "properties": [{ "id": "displayName", "value": "1xx" }]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{code=\"2xx\", host=\"${tf_domain_name}\", instance=\"${tf_host_name}\", job=\"nginx_vhost\"}"
+            },
+            "properties": [{ "id": "displayName", "value": "2xx" }]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{code=\"3xx\", host=\"${tf_domain_name}\", instance=\"${tf_host_name}\", job=\"nginx_vhost\"}"
+            },
+            "properties": [{ "id": "displayName", "value": "3xx" }]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{code=\"4xx\", host=\"${tf_domain_name}\", instance=\"${tf_host_name}\", job=\"nginx_vhost\"}"
+            },
+            "properties": [{ "id": "displayName", "value": "4xx" }]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{code=\"5xx\", host=\"${tf_domain_name}\", instance=\"${tf_host_name}\", job=\"nginx_vhost\"}"
+            },
+            "properties": [{ "id": "displayName", "value": "5xx" }]
+          }
+        ]
+      },
+      "gridPos": { "h": 14, "w": 12, "x": 0, "y": 0 },
+      "options": {
+        "legend": {
+          "calcs": ["lastNotNull", "mean"],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": { "mode": "single", "sort": "none" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${tf_prometheus_data_source_uid}" },
+          "editorMode": "code",
+          "expr": "increase(nginx_vts_server_requests_total{host=\"${tf_domain_name}\"}[5m])",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "HTTP status",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 38,
+  "tags": [],
+  "templating": { "list": [] },
+  "time": { "from": "now-5m", "to": "now" },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Nginx http status",
+  "uid": "f008828c-070b-4e9e-bb89-063ba6d88f59",
+  "weekStart": ""
+}

@@ -1,8 +1,15 @@
 ---
 nginx__install_vhost_traffic_module: true
+nginx__add_nginx_package_repositories: true
+nginx__package_repositories_branch: mainline # mainline — to install v1.25+ with http3/quic support
+
+nginx__vhost_module_compatibility:
+  min_supported_version: 1.4.0
+  min_unsupported_version: 1.26.0 # hack: compatibility with v1.25+ is untested
 
 nginx__websites_conf_templates_path: "{{ inventory_dir }}/group_templates/web_vms/nginx/sites"
 nginx__disable_default_website_config: true
+
 
 nginx__generate_additional_conf_files: true
 nginx__generate_additional_conf_files_templates_path: "{{ inventory_dir }}/group_templates/web_vms/nginx/conf.d"

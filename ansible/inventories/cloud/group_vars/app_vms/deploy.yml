@@ -1,5 +1,4 @@
 ---
 deploy__app_config_email: n98gt@yandex.ru
 
-
-deploy__app_config_db_address: 10.128.0.15 # hack
+deploy__app_config_db_address: "{{ hostvars['db'].ansible_host }}"

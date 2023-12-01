@@ -1,0 +1,62 @@
+log_format json_log_post escape=json '{'
+'"remote_addr": "$remote_addr", ' # client IP, can be modified by ngx_http_realip_module
+'"remote_addr_real": "$realip_remote_addr", ' # real client IP before ngx_http_realip_module replacements
+'"remote_user": "$remote_user", ' # client HTTP username
+'"time_epoch": "$msec", ' # request unixtime in seconds with a milliseconds resolution
+'"time_local": "$time_local", '
+'"time_iso8601": "$time_iso8601", ' # local time in the ISO 8601 standard format
+'"server_name": "$server_name", ' # the name of the vhost serving the request
+'"request_length": "$request_length", ' # request length (including headers and body)
+'"request": "$request", ' # full path no arguments if the request
+'"args": "$args", ' # args
+'"status": $status, ' # response status code
+'"body_bytes_sent": $body_bytes_sent, ' # the number of body bytes exclude headers sent to a client
+'"bytes_sent": "$bytes_sent", ' # the number of bytes sent to a client
+'"http_referer": "$http_referer", ' # HTTP referer
+'"http_user_agent": "$http_user_agent", ' # user agent
+'"upstream_addr": "$upstream_addr", ' # upstream backend server for proxied requests
+'"request_id": "$req_id", ' # the unique request id
+'"upstream_cache_status": "$upstream_cache_status", ' # cache HIT/MISS where applicable
+'"upstream_status": "$upstream_status", '
+'"upstream_connect_time": "$upstream_connect_time", ' # upstream handshake time incl. TLS
+'"upstream_response_time": "$upstream_response_time", ' # time spend receiving upstream body
+'"request_time": $request_time, ' # request processing time in seconds with msec resolution
+'"http_host": "$http_host", ' # the request Host: header
+'"server_protocol": "$server_protocol", ' # request protocol, usually “HTTP/1.0”, “HTTP/1.1”
+'"request_uri": "$request_uri", ' # full original request URI (with arguments)
+'"scheme": "$scheme", ' # http or https
+'"request_method": "$request_method", ' # request method
+'"request_body": "$request_body"'
+'}';
+
+
+log_format json_log_quic escape=json '{'
+'"remote_addr": "$remote_addr", ' # client IP, can be modified by ngx_http_realip_module
+'"remote_addr_real": "$realip_remote_addr", ' # real client IP before ngx_http_realip_module replacements
+'"remote_user": "$remote_user", ' # client HTTP username
+'"time_epoch": "$msec", ' # request unixtime in seconds with a milliseconds resolution
+'"time_local": "$time_local", '
+'"time_iso8601": "$time_iso8601", ' # local time in the ISO 8601 standard format
+'"server_name": "$server_name", ' # the name of the vhost serving the request
+'"request_length": "$request_length", ' # request length (including headers and body)
+'"request": "$request", ' # full path no arguments if the request
+'"args": "$args", ' # args
+'"status": $status, ' # response status code
+'"body_bytes_sent": $body_bytes_sent, ' # the number of body bytes exclude headers sent to a client
+'"bytes_sent": "$bytes_sent", ' # the number of bytes sent to a client
+'"http_referer": "$http_referer", ' # HTTP referer
+'"http_user_agent": "$http_user_agent", ' # user agent
+'"upstream_addr": "$upstream_addr", ' # upstream backend server for proxied requests
+'"request_id": "$req_id", ' # the unique request id
+'"upstream_cache_status": "$upstream_cache_status", ' # cache HIT/MISS where applicable
+'"upstream_status": "$upstream_status", '
+'"upstream_connect_time": "$upstream_connect_time", ' # upstream handshake time incl. TLS
+'"upstream_response_time": "$upstream_response_time", ' # time spend receiving upstream body
+'"request_time": $request_time, ' # request processing time in seconds with msec resolution
+'"http_host": "$http_host", ' # the request Host: header
+'"server_protocol": "$server_protocol", ' # request protocol, usually “HTTP/1.0”, “HTTP/1.1”
+'"request_uri": "$request_uri", ' # full original request URI (with arguments)
+'"scheme": "$scheme", ' # http or https
+'"request_method": "$request_method", ' # request method
+'"http3": "$http3"'
+'}';

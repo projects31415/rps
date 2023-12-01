@@ -2,16 +2,16 @@
 
 readonly SLEEP_TIMEOUT=5
 count=0
-max_failures=3
+max_failures=2
 
 while [[ true ]]; do
-    if curl --fail http://127.0.0.1:8000; then
+    if curl --fail http://127.0.0.1:6432; then
         count=0
     else
         ((count++))
         if ((count == max_failures)); then
             echo "Check failed"
-            sudo systemctl restart http_process
+            sudo systemctl restart {{ deploy__app_binary_name }}.service
         fi
     fi
     sleep ${SLEEP_TIMEOUT}

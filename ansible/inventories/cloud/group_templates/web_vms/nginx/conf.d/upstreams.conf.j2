@@ -1,5 +1,5 @@
 # servers must be live during nginx startup
 upstream app-nodes {
-    server 192.168.50.21:6432;
-    server 192.168.50.20:6432;
+    server {{ hostvars['app-1'].ansible_host }}:6432 max_fails=10 fail_timeout=5s;
+    server {{ hostvars['app-2'].ansible_host }}:6432 max_fails=10 fail_timeout=5s;
 }

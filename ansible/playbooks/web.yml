@@ -8,6 +8,18 @@
 
   roles:
     - nginx
+    - certbot
+-
+  name: Install monitoring tools
+  hosts: web_vms
+  strategy: free
+  gather_facts: true
+  become: true
+
+  roles:
+    - prometheus
+    - docker
+    - grafana_docker
 -
   name: Install web monitoring tools
   ansible.builtin.import_playbook: _monitoring_tools_web.yml

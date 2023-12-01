@@ -105,8 +105,9 @@
     owner: root
     group: root
     mode: "0644"
+
 -
-  name: Create iptables rule to «fix» app slow start
+  name: Create tempmorary iptables rule to «fix» app slow start # this ip rule will be cleared after vm reboot
   when: deploy__app_slow_start_hack
   ansible.builtin.iptables:
     table: nat

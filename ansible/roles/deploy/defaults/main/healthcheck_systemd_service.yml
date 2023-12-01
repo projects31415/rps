@@ -5,7 +5,7 @@ deploy__healthcheck_systemd_service: |
 
   [Service]
   Restart=always
-  User={{ deploy__system_user_name }}
+  User=root
   ExecStart={{ deploy__app_dir }}/healthcheck.sh
   ExecStop=/bin/kill -HUP $MAINPID
   StartLimitBurst=30

@@ -6,7 +6,6 @@ server {
 
     location ~ ^/status_vhost {
         satisfy any;
-        allow 192.168.0.0/16; # allow requests from prometheus
         allow 127.0.0.1;
         deny all;
         vhost_traffic_status_display;
@@ -16,7 +15,6 @@ server {
 
     location /stub_status {
         stub_status;
-        allow 192.168.0.0/16; # allow requests from prometheus
         allow 127.0.0.1;
         deny all;
         access_log off;
