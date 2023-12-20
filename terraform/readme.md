@@ -18,7 +18,7 @@ export _YANDEX_FOLDER_ID=<folder-id>
 
 ### create terraform service acc for managing s3 bucket, dynamo db table and other resources
 ```console
-yc iam service-account create --name terraform --folder-id ${_YANDEX_FOLDER_ID}
+yc iam service-account create --name terraform --folder-id ${_YANDEX_FOLDER_ID} --description "terraform acc for managing cloud resources"
 ```
 
 ## save terraform service acc id to env var
@@ -45,7 +45,7 @@ yc iam key create \
 
 ### create terraform-tfstate service for access to tfstate and tfstate locks
 ```console
-yc iam service-account create --name terraform-tfstate --folder-id ${_YANDEX_FOLDER_ID}
+yc iam service-account create --name terraform-tfstate --folder-id ${_YANDEX_FOLDER_ID} --description "terraform acc to access tf-state in s3 storage"
 ```
 
 ## save terraform-tfstate service acc id to env var
@@ -86,10 +86,14 @@ aws_access_key_id=YC…_7C
 aws_secret_access_key=YC…v9
 ```
 
-## temporary change tf backend to local
+## create temporary file with local tf backend
 ```console
 cd $(git rev-parse --show-toplevel)/terraform/s3_backend
-sed -i 's/backend "s3" {/backend "local" {/g' main.tf
+cat <<EOF > main_override.tf
+terraform {
+  backend "local" {}
+}
+EOF
 ```
 
 ## create s3 backend and yandex db
@@ -128,7 +132,7 @@ aws dynamodb create-table \
 
 ## move local tf state to s3 bucket
 ```console
-sed -i 's/backend "local" {/backend "s3" {/g' main.tf
+rm main_override.tf
 tf init -backend-config=$(git rev-parse --show-toplevel)/terraform/s3_backend_common.tfbackend -backend-config=s3_backend.tfbackend -migrate-state
 rm terraform.tfstate
 ```
